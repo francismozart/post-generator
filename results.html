@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados - Gerador de Blog Posts</title>
+    <link rel="stylesheet" href="results-styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Blog Posts</h2>
+                <button class="back-btn" onclick="window.location.href='index.html'">
+                    ← Voltar
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="category-info" id="categoryInfo">
+                    <span class="category-label">Categoria:</span>
+                    <span class="category-value" id="categoryValue">-</span>
+                </div>
+                
+                <nav class="blog-list" id="blogList">
+                    <!-- Blog post links will be inserted here -->
+                </nav>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="generation-info" id="generationInfo">
+                    <small>Gerado em: <span id="generationDate">-</span></small>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navigation Controls -->
+            <div class="nav-controls">
+                <button class="nav-btn" id="firstBtn" onclick="BlogViewer.goToFirst()">
+                    ⏮ Primeiro
+                </button>
+                <button class="nav-btn" id="prevBtn" onclick="BlogViewer.goToPrevious()">
+                    ← Anterior
+                </button>
+                <span class="nav-info" id="navInfo">- de -</span>
+                <button class="nav-btn" id="nextBtn" onclick="BlogViewer.goToNext()">
+                    Próximo →
+                </button>
+                <button class="nav-btn" id="lastBtn" onclick="BlogViewer.goToLast()">
+                    Último ⏭
+                </button>
+            </div>
+
+            <!-- Blog Post Content -->
+            <article class="blog-post" id="blogPost">
+                <div class="no-content" id="noContent">
+                    <h2>Nenhum conteúdo encontrado</h2>
+                    <p>Não foram encontrados resultados salvos. <a href="index.html">Clique aqui para gerar novos posts</a>.</p>
+                </div>
+                
+                <div class="blog-content" id="blogContent" style="display: none;">
+                    <!-- Blog post header -->
+                    <header class="blog-header">
+                        <h1 class="blog-title" id="blogTitle">Título do Post</h1>
+                        <div class="blog-meta">
+                            <span class="blog-category" id="blogCategory">Categoria</span>
+                            <span class="blog-date" id="blogDate">Data</span>
+                        </div>
+                        <button class="copy-all-btn" onclick="BlogViewer.copyFullPost()">
+                            📋 Copiar Post Completo
+                        </button>
+                    </header>
+
+                    <!-- Blog post sections -->
+                    <div class="blog-sections" id="blogSections">
+                        <!-- Sections will be inserted here -->
+                    </div>
+                </div>
+            </article>
+        </main>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="BlogViewer.toggleSidebar()">
+            ☰
+        </button>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage">Copiado para a área de transferência!</span>
+    </div>
+
+    <script src="results-script.js"></script>
+</body>
+</html>
+
