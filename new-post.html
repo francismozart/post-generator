@@ -1,95 +1,113 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Novo Post - Gerador de Blog Posts</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <h1>Criar Novo Post</h1>
-            <p>Gere conteúdo automaticamente usando Gemini AI</p>
-        </header>
+      <header class="header">
+        <h1>Criar Novo Post</h1>
+        <p>Gere conteúdo automaticamente usando Gemini AI</p>
+      </header>
 
-        <main class="main-content">
-            <div class="back-navigation">
-                <button class="back-btn" onclick="window.location.href='results.html'">
-                    ← Voltar para Posts
-                </button>
+      <main class="main-content">
+        <div class="back-navigation">
+          <button
+            class="back-btn"
+            onclick="window.location.href='results.html'"
+          >
+            ← Voltar para Posts
+          </button>
+        </div>
+
+        <form id="blogForm" class="form-container">
+          <div class="api-key-info" id="apiKeyInfo">
+            <div class="api-key-display">
+              <span class="api-key-label">API Key:</span>
+              <span class="api-key-value" id="apiKeyDisplay"
+                >••••••••••••••••</span
+              >
+              <button
+                type="button"
+                class="change-key-btn"
+                onclick="NewPostManager.changeApiKey()"
+              >
+                Alterar
+              </button>
             </div>
+          </div>
 
-            <form id="blogForm" class="form-container">
-                <div class="api-key-info" id="apiKeyInfo">
-                    <div class="api-key-display">
-                        <span class="api-key-label">API Key:</span>
-                        <span class="api-key-value" id="apiKeyDisplay">••••••••••••••••</span>
-                        <button type="button" class="change-key-btn" onclick="NewPostManager.changeApiKey()">
-                            Alterar
-                        </button>
-                    </div>
-                </div>
+          <div class="form-group">
+            <label for="categoria" class="form-label">
+              <span class="label-text">Categoria</span>
+              <span class="label-required">*</span>
+            </label>
+            <input
+              type="text"
+              id="categoria"
+              name="categoria"
+              class="form-input"
+              placeholder="Ex: Tecnologia, Saúde, Marketing"
+              required
+            />
+            <small class="form-help"
+              >Categoria dos artigos que serão gerados</small
+            >
+          </div>
 
-                <div class="form-group">
-                    <label for="categoria" class="form-label">
-                        <span class="label-text">Categoria</span>
-                        <span class="label-required">*</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="categoria" 
-                        name="categoria" 
-                        class="form-input" 
-                        placeholder="Ex: Tecnologia, Saúde, Marketing"
-                        required
-                    >
-                    <small class="form-help">Categoria dos artigos que serão gerados</small>
-                </div>
+          <div class="form-group">
+            <label for="titulos" class="form-label">
+              <span class="label-text">Títulos</span>
+              <span class="label-required">*</span>
+            </label>
+            <textarea
+              id="titulos"
+              name="titulos"
+              class="form-textarea"
+              placeholder="Digite os títulos dos artigos, um por linha&#10;&#10;Exemplo:&#10;Como usar IA no marketing digital&#10;Tendências de tecnologia em 2024&#10;Benefícios da automação empresarial"
+              rows="8"
+              required
+            ></textarea>
+            <small class="form-help"
+              >Digite um título por linha. Cada título gerará um artigo
+              completo</small
+            >
+          </div>
 
-                <div class="form-group">
-                    <label for="titulos" class="form-label">
-                        <span class="label-text">Títulos</span>
-                        <span class="label-required">*</span>
-                    </label>
-                    <textarea 
-                        id="titulos" 
-                        name="titulos" 
-                        class="form-textarea" 
-                        placeholder="Digite os títulos dos artigos, um por linha&#10;&#10;Exemplo:&#10;Como usar IA no marketing digital&#10;Tendências de tecnologia em 2024&#10;Benefícios da automação empresarial"
-                        rows="8"
-                        required
-                    ></textarea>
-                    <small class="form-help">Digite um título por linha. Cada título gerará um artigo completo</small>
-                </div>
-
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span class="btn-text">Criar Posts</span>
-                    <div class="btn-loader" style="display: none;">
-                        <div class="spinner"></div>
-                        <span>Processando...</span>
-                    </div>
-                </button>
-            </form>
-
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <div class="progress-header">
-                    <h3>Gerando Conteúdo</h3>
-                    <span class="progress-text" id="progressText">Preparando...</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="current-task" id="currentTask"></div>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="btn-text">Criar Posts</span>
+            <div class="btn-loader" style="display: none">
+              <div class="spinner"></div>
+              <span>Processando...</span>
             </div>
-        </main>
+          </button>
+        </form>
 
-        <footer class="footer">
-            <p>Powered by Gemini AI • Criado com ❤️</p>
-        </footer>
+        <div
+          class="progress-container"
+          id="progressContainer"
+          style="display: none"
+        >
+          <div class="progress-header">
+            <h3>Gerando Conteúdo</h3>
+            <span class="progress-text" id="progressText">Preparando...</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="current-task" id="currentTask"></div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <p>Powered by Gemini AI • Criado com ❤️</p>
+      </footer>
     </div>
 
+    <script src="api-key-script.js"></script>
     <script src="new-post-script.js"></script>
-</body>
+  </body>
 </html>
-
