@@ -1,4 +1,4 @@
-class BlogGenerator {
+class NewPostManager {
     constructor() {
         this.apiKey = '';
         this.categoria = '';
@@ -7,7 +7,24 @@ class BlogGenerator {
         this.currentProgress = 0;
         this.totalSteps = 0;
         
+        this.initialize();
+    }
+
+    initialize() {
+        // Check if API Key exists
+        if (!ApiKeyUtils.ensureApiKey()) {
+            return; // Will redirect to API Key page
+        }
+        
+        this.apiKey = ApiKeyUtils.getApiKey();
+        this.displayApiKey();
         this.initializeEventListeners();
+    }
+
+    displayApiKey() {
+        // Show masked API Key
+        const maskedKey = this.apiKey.substring(0, 8) + '••••••••••••••••';
+        document.getElementById('apiKeyDisplay').textContent = maskedKey;
     }
 
     initializeEventListeners() {
@@ -19,12 +36,11 @@ class BlogGenerator {
         e.preventDefault();
         
         // Get form data
-        this.apiKey = document.getElementById('apiKey').value.trim();
         this.categoria = document.getElementById('categoria').value.trim();
         const titulosText = document.getElementById('titulos').value.trim();
         
         // Validate inputs
-        if (!this.apiKey || !this.categoria || !titulosText) {
+        if (!this.categoria || !titulosText) {
             alert('Por favor, preencha todos os campos obrigatórios.');
             return;
         }
@@ -89,23 +105,63 @@ class BlogGenerator {
             // Step 1: Generate outline
             this.updateCurrentTask(`Gerando estrutura para: ${title}`);
             const outlinePrompt = `Gere uma outline (estrutura de artigo para blog) com a palavra-chave ${title}`;
-            const outlineResponse = await this.callGeminiAPI(outlinePrompt);
+            const outlineResponse = await this.callGeminiAPIWithContext([], outlinePrompt);
             blogPost.outline = outlineResponse;
 
             // Parse sections from outline
             const sections = this.parseSectionsFromOutline(outlineResponse);
             
-            // Step 2: Generate content for each section
+            // Initialize conversation context with the outline
+            const conversationContext = [
+                {
+                    role: "user",
+                    parts: [{
+                        text: `Vou criar um artigo de blog com o título "${title}" na categoria "${this.categoria}". A estrutura do artigo é:\n\n${outlineResponse}\n\nVou pedir para você gerar o conteúdo de cada seção, mantendo coerência e continuidade entre elas.`
+                    }]
+                },
+                {
+                    role: "model",
+                    parts: [{
+                        text: `Entendido! Vou ajudar você a criar um artigo completo sobre "${title}" seguindo a estrutura fornecida. Manterei a coerência e continuidade entre todas as seções para criar um conteúdo fluido e bem conectado. Pode começar solicitando o conteúdo de qualquer seção.`
+                    }]
+                }
+            ];
+            
+            // Step 2: Generate content for each section with context
             for (let i = 0; i < sections.length; i++) {
                 const sectionName = sections[i];
                 this.updateCurrentTask(`Gerando conteúdo para seção: ${sectionName}`);
                 
-                const sectionPrompt = `Gere o texto para a seção ${sectionName}`;
-                const sectionContent = await this.callGeminiAPI(sectionPrompt);
+                // Create context-aware prompt for this section
+                let sectionPrompt = `Agora gere o texto completo para a seção "${sectionName}".`;
+                
+                // Add context about previous sections if this isn't the first section
+                if (i > 0) {
+                    sectionPrompt += ` Lembre-se de manter a continuidade com as seções anteriores já escritas.`;
+                }
+                
+                sectionPrompt += ` O texto deve ser detalhado, informativo e bem estruturado.`;
+                
+                const sectionContent = await this.callGeminiAPIWithContext(conversationContext, sectionPrompt);
                 
                 blogPost.sections.push({
                     name: sectionName,
                     content: sectionContent
+                });
+
+                // Add this section to the conversation context for future sections
+                conversationContext.push({
+                    role: "user",
+                    parts: [{
+                        text: sectionPrompt
+                    }]
+                });
+                
+                conversationContext.push({
+                    role: "model",
+                    parts: [{
+                        text: sectionContent
+                    }]
                 });
 
                 // Small delay to avoid rate limiting
@@ -120,15 +176,22 @@ class BlogGenerator {
         return blogPost;
     }
 
-    async callGeminiAPI(prompt) {
+    async callGeminiAPIWithContext(conversationHistory, newPrompt) {
         const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
         
-        const requestBody = {
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
+        // Build the contents array with conversation history + new prompt
+        const contents = [...conversationHistory];
+        
+        // Add the new prompt
+        contents.push({
+            role: "user",
+            parts: [{
+                text: newPrompt
             }]
+        });
+
+        const requestBody = {
+            contents: contents
         };
 
         const response = await fetch(url, {
@@ -152,6 +215,11 @@ class BlogGenerator {
         }
 
         return data.candidates[0].content.parts[0].text;
+    }
+
+    async callGeminiAPI(prompt) {
+        // Use the context-aware method with empty history for backward compatibility
+        return await this.callGeminiAPIWithContext([], prompt);
     }
 
     parseSectionsFromOutline(outline) {
@@ -183,17 +251,48 @@ class BlogGenerator {
     }
 
     saveResultsAndRedirect() {
-        // Save results to localStorage
+        // Create storage key based on API Key hash
+        const apiKeyHash = this.hashApiKey(this.apiKey);
+        const storageKey = `blogPosts_${apiKeyHash}`;
+        
+        // Get existing posts for this API Key
+        const existingData = localStorage.getItem(storageKey);
+        let allPosts = [];
+        
+        if (existingData) {
+            try {
+                const parsed = JSON.parse(existingData);
+                allPosts = parsed.blogPosts || [];
+            } catch (error) {
+                console.error('Error parsing existing posts:', error);
+            }
+        }
+        
+        // Add new posts to existing ones
+        allPosts.push(...this.blogPosts);
+        
+        // Save updated results to localStorage
         const results = {
             categoria: this.categoria,
-            blogPosts: this.blogPosts,
+            blogPosts: allPosts,
             generatedAt: new Date().toISOString()
         };
         
-        localStorage.setItem('blogGeneratorResults', JSON.stringify(results));
+        localStorage.setItem(storageKey, JSON.stringify(results));
         
         // Redirect to results page
         window.location.href = 'results.html';
+    }
+
+    hashApiKey(apiKey) {
+        // Simple hash function for API Key (for storage key)
+        let hash = 0;
+        for (let i = 0; i < apiKey.length; i++) {
+            const char = apiKey.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash).toString(36);
     }
 
     showProgress() {
@@ -230,50 +329,19 @@ class BlogGenerator {
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    // Static methods for global access
+    static changeApiKey() {
+        const confirmChange = confirm('Tem certeza que deseja trocar a API Key? Você será redirecionado para a página inicial.');
+        if (confirmChange) {
+            ApiKeyUtils.clearApiKey();
+            window.location.href = 'index.html';
+        }
+    }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new BlogGenerator();
+    new NewPostManager();
 });
-
-// Utility functions for the results page
-window.BlogUtils = {
-    copyToClipboard: async function(text) {
-        try {
-            await navigator.clipboard.writeText(text);
-            return true;
-        } catch (err) {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                return true;
-            } catch (err) {
-                document.body.removeChild(textArea);
-                return false;
-            }
-        }
-    },
-
-    showCopyFeedback: function(button) {
-        const originalText = button.textContent;
-        button.textContent = 'Copiado!';
-        button.style.background = '#10b981';
-        
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = '';
-        }, 2000);
-    }
-};
 

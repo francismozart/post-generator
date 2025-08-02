@@ -11,10 +11,15 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h2>Blog Posts</h2>
-                <button class="back-btn" onclick="window.location.href='index.html'">
-                    ← Voltar
-                </button>
+                <h2>Meus Posts</h2>
+                <div class="sidebar-actions">
+                    <button class="new-post-btn" onclick="window.location.href='new-post.html'">
+                        + Novo Post
+                    </button>
+                    <button class="change-key-btn" onclick="ResultsManager.changeApiKey()">
+                        Trocar API Key
+                    </button>
+                </div>
             </div>
             
             <div class="sidebar-content">
@@ -57,8 +62,8 @@
             <!-- Blog Post Content -->
             <article class="blog-post" id="blogPost">
                 <div class="no-content" id="noContent">
-                    <h2>Nenhum conteúdo encontrado</h2>
-                    <p>Não foram encontrados resultados salvos. <a href="index.html">Clique aqui para gerar novos posts</a>.</p>
+                    <h2>Nenhum post encontrado</h2>
+                    <p>Você ainda não criou nenhum post. <a href="new-post.html">Clique aqui para criar seu primeiro post</a>.</p>
                 </div>
                 
                 <div class="blog-content" id="blogContent" style="display: none;">

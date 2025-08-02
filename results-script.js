@@ -4,11 +4,18 @@ class BlogViewer {
         this.currentIndex = 0;
         this.categoria = '';
         this.generatedAt = '';
+        this.currentApiKey = '';
         
         this.initialize();
     }
 
     initialize() {
+        // Check if API Key exists
+        if (!ApiKeyUtils.ensureApiKey()) {
+            return; // Will redirect to API Key page
+        }
+        
+        this.currentApiKey = ApiKeyUtils.getApiKey();
         this.loadResults();
         this.renderSidebar();
         this.showCurrentPost();
@@ -16,32 +23,49 @@ class BlogViewer {
     }
 
     loadResults() {
-        const savedResults = localStorage.getItem('blogGeneratorResults');
+        // Load all posts from localStorage
+        const allPosts = this.getAllPostsFromStorage();
         
-        if (!savedResults) {
+        // Filter posts by current API Key
+        this.blogPosts = allPosts.filter(post => post.apiKey === this.currentApiKey);
+        
+        if (this.blogPosts.length === 0) {
             this.showNoContent();
             return;
         }
+        
+        // Hide no content message
+        document.getElementById('noContent').style.display = 'none';
+        document.getElementById('blogContent').style.display = 'block';
+    }
 
-        try {
-            const results = JSON.parse(savedResults);
-            this.blogPosts = results.blogPosts || [];
-            this.categoria = results.categoria || '';
-            this.generatedAt = results.generatedAt || '';
-            
-            if (this.blogPosts.length === 0) {
-                this.showNoContent();
-                return;
+    getAllPostsFromStorage() {
+        const allPosts = [];
+        
+        // Get all keys from localStorage that start with 'blogPosts_'
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('blogPosts_')) {
+                try {
+                    const postsData = JSON.parse(localStorage.getItem(key));
+                    if (postsData && postsData.blogPosts) {
+                        // Add API Key to each post for filtering
+                        const apiKey = key.replace('blogPosts_', '');
+                        postsData.blogPosts.forEach(post => {
+                            post.apiKey = apiKey;
+                            post.categoria = postsData.categoria;
+                            post.generatedAt = postsData.generatedAt;
+                        });
+                        allPosts.push(...postsData.blogPosts);
+                    }
+                } catch (error) {
+                    console.error('Error parsing posts data:', error);
+                }
             }
-            
-            // Hide no content message
-            document.getElementById('noContent').style.display = 'none';
-            document.getElementById('blogContent').style.display = 'block';
-            
-        } catch (error) {
-            console.error('Erro ao carregar resultados:', error);
-            this.showNoContent();
         }
+        
+        // Sort by creation date (newest first)
+        return allPosts.sort((a, b) => new Date(b.generatedAt) - new Date(a.generatedAt));
     }
 
     showNoContent() {
@@ -53,12 +77,22 @@ class BlogViewer {
     }
 
     renderSidebar() {
-        // Update category info
-        document.getElementById('categoryValue').textContent = this.categoria;
+        // Update category info - show current post's category if available
+        const categoryInfo = document.getElementById('categoryInfo');
+        if (this.blogPosts.length > 0 && this.currentIndex < this.blogPosts.length) {
+            const currentPost = this.blogPosts[this.currentIndex];
+            categoryInfo.innerHTML = `
+                <span class="category-label">Categoria:</span>
+                <span class="category-value">${currentPost.categoria || 'Sem categoria'}</span>
+            `;
+        } else {
+            categoryInfo.innerHTML = '';
+        }
         
-        // Update generation date
-        if (this.generatedAt) {
-            const date = new Date(this.generatedAt);
+        // Update generation date - show latest post date
+        if (this.blogPosts.length > 0) {
+            const latestPost = this.blogPosts[0]; // Already sorted by date
+            const date = new Date(latestPost.generatedAt);
             document.getElementById('generationDate').textContent = date.toLocaleString('pt-BR');
         }
         
@@ -71,11 +105,14 @@ class BlogViewer {
             blogItem.className = `blog-item ${index === this.currentIndex ? 'active' : ''}`;
             blogItem.onclick = () => this.goToPost(index);
             
+            const postDate = new Date(post.generatedAt);
+            
             blogItem.innerHTML = `
                 <div class="blog-item-title">${post.title}</div>
                 <div class="blog-item-meta">
-                    ${post.sections.length} seções
+                    ${post.categoria} • ${post.sections.length} seções
                     ${post.error ? ' • Erro' : ''}
+                    <br><small>${postDate.toLocaleDateString('pt-BR')}</small>
                 </div>
             `;
             
@@ -90,7 +127,7 @@ class BlogViewer {
         
         // Update header
         document.getElementById('blogTitle').textContent = post.title;
-        document.getElementById('blogCategory').textContent = this.categoria;
+        document.getElementById('blogCategory').textContent = post.categoria || 'Sem categoria';
         
         if (post.createdAt) {
             const date = new Date(post.createdAt);
@@ -322,6 +359,17 @@ class BlogViewer {
 
     static toggleSidebar() {
         BlogViewer.instance.toggleSidebar();
+    }
+}
+
+// Results Manager for handling API Key changes
+class ResultsManager {
+    static changeApiKey() {
+        const confirmChange = confirm('Tem certeza que deseja trocar a API Key? Você será redirecionado para a página inicial.');
+        if (confirmChange) {
+            ApiKeyUtils.clearApiKey();
+            window.location.href = 'index.html';
+        }
     }
 }
 
