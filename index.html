@@ -1,72 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador de Blog Posts - Gemini AI</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <h1>Gerador de Blog Posts</h1>
-            <p>Crie conteúdo automaticamente usando Gemini AI</p>
-        </header>
+      <header class="header">
+        <h1>Gerador de Blog Posts</h1>
+        <p>Crie conteúdo automaticamente usando Gemini AI</p>
+      </header>
 
-        <main class="main-content">
-            <form id="apiKeyForm" class="form-container">
-                <div class="form-group">
-                    <label for="apiKey" class="form-label">
-                        <span class="label-text">API Key do Gemini</span>
-                        <span class="label-required">*</span>
-                    </label>
-                    <input 
-                        type="password" 
-                        id="apiKey" 
-                        name="apiKey" 
-                        class="form-input" 
-                        placeholder="Cole sua API Key do Gemini aqui"
-                        required
-                    >
-                    <small class="form-help">
-                        Sua API Key será armazenada localmente e usada para gerar conteúdo. 
-                        <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener">
-                            Obtenha sua chave aqui
-                        </a>
-                    </small>
-                </div>
+      <main class="main-content">
+        <form id="apiKeyForm" class="form-container">
+          <div class="form-group">
+            <label for="apiKey" class="form-label">
+              <span class="label-text">API Key do Gemini</span>
+              <span class="label-required">*</span>
+            </label>
+            <input
+              type="password"
+              id="apiKey"
+              name="apiKey"
+              class="form-input"
+              placeholder="Cole sua API Key do Gemini aqui"
+              required
+            />
+            <small class="form-help">
+              Sua API Key será armazenada localmente e usada para gerar
+              conteúdo.
+              <a
+                href="https://makersuite.google.com/app/apikey"
+                target="_blank"
+                rel="noopener"
+              >
+                Obtenha sua chave aqui
+              </a>
+            </small>
+          </div>
 
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span class="btn-text">Continuar</span>
-                    <div class="btn-loader" style="display: none;">
-                        <div class="spinner"></div>
-                        <span>Verificando...</span>
-                    </div>
-                </button>
-            </form>
-
-            <div class="existing-key-section" id="existingKeySection" style="display: none;">
-                <div class="existing-key-card">
-                    <h3>API Key Encontrada</h3>
-                    <p>Já existe uma API Key salva. Você pode continuar usando ela ou inserir uma nova.</p>
-                    <div class="existing-key-actions">
-                        <button class="secondary-btn" onclick="ApiKeyManager.continueWithExisting()">
-                            Usar API Key Existente
-                        </button>
-                        <button class="tertiary-btn" onclick="ApiKeyManager.clearAndUseNew()">
-                            Usar Nova API Key
-                        </button>
-                    </div>
-                </div>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <span class="btn-text">Continuar</span>
+            <div class="btn-loader" style="display: none">
+              <div class="spinner"></div>
+              <span>Verificando...</span>
             </div>
-        </main>
+          </button>
+        </form>
 
-        <footer class="footer">
-            <p>Powered by Gemini AI • Criado com ❤️</p>
-        </footer>
+        <div
+          class="existing-key-section"
+          id="existingKeySection"
+          style="display: none"
+        >
+          <div class="existing-key-card">
+            <h3>API Key Encontrada</h3>
+            <p>
+              Já existe uma API Key salva. Você pode continuar usando ela ou
+              inserir uma nova.
+            </p>
+            <div class="existing-key-actions">
+              <button
+                class="secondary-btn"
+                onclick="ApiKeyManager.continueWithExisting()"
+              >
+                Usar API Key Existente
+              </button>
+              <button
+                class="tertiary-btn"
+                onclick="ApiKeyManager.clearAndUseNew()"
+              >
+                Usar Nova API Key
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <p>Powered by Gemini AI • Criado com ❤️</p>
+      </footer>
     </div>
 
+    <script src="api-key-util.js"></script>
     <script src="api-key-script.js"></script>
-</body>
+  </body>
 </html>
-
