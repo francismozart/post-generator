@@ -217,7 +217,143 @@ body {
     opacity: 0.8;
 }
 
-/* Responsive Design */
+/* Existing Key Section */
+.existing-key-section {
+    margin-top: 2rem;
+}
+
+.existing-key-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    text-align: center;
+}
+
+.existing-key-card h3 {
+    color: #374151;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.existing-key-card p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.existing-key-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.secondary-btn {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.tertiary-btn {
+    padding: 0.75rem 1.5rem;
+    background: transparent;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.tertiary-btn:hover {
+    border-color: #d1d5db;
+    color: #374151;
+}
+
+/* Back Navigation */
+.back-navigation {
+    margin-bottom: 1.5rem;
+}
+
+.back-navigation .back-btn {
+    background: rgba(255,255,255,0.9);
+    color: #667eea;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.back-navigation .back-btn:hover {
+    background: white;
+    transform: translateX(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* API Key Info */
+.api-key-info {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+.api-key-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.api-key-label {
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.api-key-value {
+    font-family: 'Courier New', monospace;
+    color: #6b7280;
+    font-size: 0.9rem;
+    flex: 1;
+    margin: 0 1rem;
+}
+
+.api-key-display .change-key-btn {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.api-key-display .change-key-btn:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
 @media (max-width: 768px) {
     .container {
         padding: 1rem;

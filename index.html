@@ -14,10 +14,10 @@
         </header>
 
         <main class="main-content">
-            <form id="blogForm" class="form-container">
+            <form id="apiKeyForm" class="form-container">
                 <div class="form-group">
                     <label for="apiKey" class="form-label">
-                        <span class="label-text">API Key</span>
+                        <span class="label-text">API Key do Gemini</span>
                         <span class="label-required">*</span>
                     </label>
                     <input 
@@ -28,59 +28,36 @@
                         placeholder="Cole sua API Key do Gemini aqui"
                         required
                     >
-                    <small class="form-help">Sua API Key será usada apenas localmente e não será armazenada</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="categoria" class="form-label">
-                        <span class="label-text">Categoria</span>
-                        <span class="label-required">*</span>
-                    </label>
-                    <input 
-                        type="text" 
-                        id="categoria" 
-                        name="categoria" 
-                        class="form-input" 
-                        placeholder="Ex: Tecnologia, Saúde, Marketing"
-                        required
-                    >
-                    <small class="form-help">Categoria dos artigos que serão gerados</small>
-                </div>
-
-                <div class="form-group">
-                    <label for="titulos" class="form-label">
-                        <span class="label-text">Títulos</span>
-                        <span class="label-required">*</span>
-                    </label>
-                    <textarea 
-                        id="titulos" 
-                        name="titulos" 
-                        class="form-textarea" 
-                        placeholder="Digite os títulos dos artigos, um por linha&#10;&#10;Exemplo:&#10;Como usar IA no marketing digital&#10;Tendências de tecnologia em 2024&#10;Benefícios da automação empresarial"
-                        rows="8"
-                        required
-                    ></textarea>
-                    <small class="form-help">Digite um título por linha. Cada título gerará um artigo completo</small>
+                    <small class="form-help">
+                        Sua API Key será armazenada localmente e usada para gerar conteúdo. 
+                        <a href="https://makersuite.google.com/app/apikey" target="_blank" rel="noopener">
+                            Obtenha sua chave aqui
+                        </a>
+                    </small>
                 </div>
 
                 <button type="submit" class="submit-btn" id="submitBtn">
-                    <span class="btn-text">Criar</span>
+                    <span class="btn-text">Continuar</span>
                     <div class="btn-loader" style="display: none;">
                         <div class="spinner"></div>
-                        <span>Processando...</span>
+                        <span>Verificando...</span>
                     </div>
                 </button>
             </form>
 
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <div class="progress-header">
-                    <h3>Gerando Conteúdo</h3>
-                    <span class="progress-text" id="progressText">Preparando...</span>
+            <div class="existing-key-section" id="existingKeySection" style="display: none;">
+                <div class="existing-key-card">
+                    <h3>API Key Encontrada</h3>
+                    <p>Já existe uma API Key salva. Você pode continuar usando ela ou inserir uma nova.</p>
+                    <div class="existing-key-actions">
+                        <button class="secondary-btn" onclick="ApiKeyManager.continueWithExisting()">
+                            Usar API Key Existente
+                        </button>
+                        <button class="tertiary-btn" onclick="ApiKeyManager.clearAndUseNew()">
+                            Usar Nova API Key
+                        </button>
+                    </div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="current-task" id="currentTask"></div>
             </div>
         </main>
 
@@ -89,7 +66,7 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="api-key-script.js"></script>
 </body>
 </html>
 
